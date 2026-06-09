@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Bell, 
   Send, 
-  Sliders, 
-  Sparkles, 
-  Check, 
-  Edit3,
-  X
+  Sparkles 
 } from 'lucide-react';
 
 interface ThankYouConfig {
@@ -32,8 +28,8 @@ const DEFAULT_CONFIG: ThankYouConfig = {
   showSlider: true
 };
 
-export default function ThankYou({ isEditAllowed = true }: { isEditAllowed?: boolean }) {
-  const [config, setConfig] = useState<ThankYouConfig>(() => {
+export default function ThankYou({ isEditAllowed = false }: { isEditAllowed?: boolean }) {
+  const [config] = useState<ThankYouConfig>(() => {
     const saved = localStorage.getItem('annisa_portfolio_thankyou_config');
     if (saved) {
       try {
@@ -45,33 +41,7 @@ export default function ThankYou({ isEditAllowed = true }: { isEditAllowed?: boo
     return DEFAULT_CONFIG;
   });
 
-  const [isEditing, setIsEditing] = useState(false);
   const [copiedNotification, setCopiedNotification] = useState(false);
-
-  // Form states for Editing
-  const [editTitle, setEditTitle] = useState(config.title);
-  const [editSliderValue, setEditSliderValue] = useState(config.sliderValue);
-  const [editShowBell, setEditShowBell] = useState(config.showBell);
-  const [editShowAirplane, setEditShowAirplane] = useState(config.showAirplane);
-  const [editShowSlider, setEditShowSlider] = useState(config.showSlider);
-  const [editCardColor, setEditCardColor] = useState(config.cardColor);
-  const [editTextColor, setEditTextColor] = useState(config.textColor);
-
-  const handleSave = () => {
-    const newConfig = {
-      title: editTitle.trim() || 'Thank You',
-      sliderValue: Number(editSliderValue),
-      badgeLabel: config.badgeLabel,
-      cardColor: editCardColor,
-      textColor: editTextColor,
-      showBell: editShowBell,
-      showAirplane: editShowAirplane,
-      showSlider: editShowSlider
-    };
-    setConfig(newConfig);
-    localStorage.setItem('annisa_portfolio_thankyou_config', JSON.stringify(newConfig));
-    setIsEditing(false);
-  };
 
   const notifyClick = () => {
     setCopiedNotification(true);
@@ -83,176 +53,6 @@ export default function ThankYou({ isEditAllowed = true }: { isEditAllowed?: boo
       className="w-full bg-white rounded-3xl border border-gray-150 p-6 md:p-8 text-center relative overflow-hidden mt-6 shadow-3xs"
       id="thankyou-section-container"
     >
-      <div className="flex justify-end items-center mb-6" id="thankyou-header">
-        {isEditAllowed && (
-          <button
-            type="button"
-            onClick={() => {
-              setEditTitle(config.title);
-              setEditSliderValue(config.sliderValue);
-              setEditShowBell(config.showBell);
-              setEditShowAirplane(config.showAirplane);
-              setEditShowSlider(config.showSlider);
-              setEditCardColor(config.cardColor);
-              setEditTextColor(config.textColor);
-              setIsEditing(!isEditing);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 border border-gray-250/60 text-[10px] font-extrabold text-[#1A3730] hover:bg-neutral-200 transition-all cursor-pointer shadow-3xs select-none"
-            id="btn-edit-thankyou"
-          >
-            <Edit3 className="w-3 h-3" />
-            {isEditing ? 'Batal Edit' : 'Edit Banner'}
-          </button>
-        )}
-      </div>
-
-      <AnimatePresence>
-        {isEditing && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-neutral-50 border border-neutral-200/60 p-4 rounded-2xl mb-6 text-left"
-            id="editor-thankyou-panel"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-[11px] font-black text-[#1A3730] uppercase font-mono tracking-tight">
-                Menu Kustomisasi Banner & Slider
-              </span>
-              <button 
-                type="button"
-                onClick={() => setIsEditing(false)} 
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div>
-                <label className="text-[9px] font-extrabold text-[#1A3730] tracking-wider pl-1 mb-1 block">Teks Utama ("Thank You")</label>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  placeholder="e.g. Thank You"
-                  className="w-full text-xs px-3 py-2 border border-gray-200 bg-white rounded-lg focus:outline-[#1A3730]"
-                />
-              </div>
-
-              <div>
-                <label className="text-[9px] font-extrabold text-[#1A3730] tracking-wider pl-1 mb-1 block">Posisi Handle Slider (0% - 100%)</label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={editSliderValue}
-                    onChange={(e) => setEditSliderValue(Number(e.target.value))}
-                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1A3730]"
-                  />
-                  <span className="w-8 text-right font-mono font-bold text-[#1A3730]">{editSliderValue}%</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[9px] font-extrabold text-[#1A3730] tracking-wider pl-1 mb-1 block">Tampilan Elemen Tambahan</label>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setEditShowBell(!editShowBell)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-extrabold border transition-colors ${
-                      editShowBell
-                        ? 'bg-[#1A3730] text-emerald-300 border-transparent'
-                        : 'bg-white text-gray-400 border-gray-200 hover:bg-neutral-50'
-                    }`}
-                  >
-                    Lonceng Bel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditShowAirplane(!editShowAirplane)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-extrabold border transition-colors ${
-                      editShowAirplane
-                        ? 'bg-[#1A3730] text-emerald-300 border-transparent'
-                        : 'bg-white text-gray-400 border-gray-200 hover:bg-neutral-50'
-                    }`}
-                  >
-                    Pesawat Kertas
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditShowSlider(!editShowSlider)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-extrabold border transition-colors ${
-                      editShowSlider
-                        ? 'bg-[#1A3730] text-emerald-300 border-transparent'
-                        : 'bg-white text-gray-400 border-gray-200 hover:bg-neutral-50'
-                    }`}
-                  >
-                    Slider Bawah
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[9px] font-extrabold text-[#1A3730] tracking-wider pl-1 mb-1 block">Warna Kartu</label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="color"
-                      value={editCardColor}
-                      onChange={(e) => setEditCardColor(e.target.value)}
-                      className="w-10 h-8 p-0 cursor-pointer border rounded-md"
-                    />
-                    <input
-                      type="text"
-                      value={editCardColor.toUpperCase()}
-                      onChange={(e) => setEditCardColor(e.target.value)}
-                      className="w-full text-[10px] px-2 py-1.5 border rounded-lg focus:outline-[#1A3730] uppercase font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[9px] font-extrabold text-[#1A3730] tracking-wider pl-1 mb-1 block">Warna Teks</label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="color"
-                      value={editTextColor}
-                      onChange={(e) => setEditTextColor(e.target.value)}
-                      className="w-10 h-8 p-0 cursor-pointer border rounded-md"
-                    />
-                    <input
-                      type="text"
-                      value={editTextColor.toUpperCase()}
-                      onChange={(e) => setEditTextColor(e.target.value)}
-                      className="w-full text-[10px] px-2 py-1.5 border rounded-lg focus:outline-[#1A3730] uppercase font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-gray-150 pt-3 mt-4">
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-1.5 text-[10.5px] font-extrabold rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-neutral-50 cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="px-4 py-1.5 text-[10.5px] font-extrabold rounded-lg bg-[#1A3730] text-emerald-300 hover:bg-[#254F45] cursor-pointer"
-              >
-                Simpan Desain
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Main visual display mockup */}
       <div className="flex flex-col items-center justify-center py-6 w-full" id="thankyou-mockup-wrapper">
         <div className="relative w-full max-w-xl mx-auto flex flex-col items-center select-none">
