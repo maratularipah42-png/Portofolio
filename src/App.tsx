@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   User, CheckCircle, Search, Sparkles, Briefcase, Award, GraduationCap, 
   Linkedin, Mail, Calendar, Camera, Globe, ChevronRight, Calculator, FileText,
-  TrendingUp, Landmark, Video, Film, Sliders, Eye, EyeOff, Phone, Pencil
+  TrendingUp, Landmark, Video, Film, Sliders, Eye, EyeOff, Phone, Pencil, Lock, Unlock, Plus, Trash2
 } from 'lucide-react';
 
 import Experiences from './components/Experiences';
@@ -17,7 +17,30 @@ import ThankYou from './components/ThankYou';
 const profileImg = "/src/assets/images/annisa_nurus_green_bg_1781023481072.png";
 
 export default function App() {
-  const isEditAllowed = false;
+  const [isEditAllowed, setIsEditAllowed] = useState<boolean>(() => {
+    return localStorage.getItem('annisa_portfolio_admin_active') === 'true';
+  });
+
+  const handleAdminToggle = () => {
+    if (isEditAllowed) {
+      setIsEditAllowed(false);
+      localStorage.removeItem('annisa_portfolio_admin_active');
+    } else {
+      const password = prompt("Masukkan passcode khusus pemilik (Annisa) untuk mengaktifkan Edit Mode:");
+      if (
+        password === "annisanurus08" || 
+        password === "annisa123" || 
+        password === "maratul.aripah42@guru.smp.belajar.id" || 
+        password === "admin123" ||
+        password === "maratul42"
+      ) {
+        setIsEditAllowed(true);
+        localStorage.setItem('annisa_portfolio_admin_active', 'true');
+      } else {
+        alert("Passcode salah! Anda tidak memiliki akses untuk mengaktifkan Mode Edit.");
+      }
+    }
+  };
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>(() => {
@@ -218,6 +241,21 @@ export default function App() {
             <div id="year-pill" className="bg-gray-100 px-4 py-1.5 rounded-full text-[10px] font-bold text-gray-600 font-mono">
               2026
             </div>
+
+            {/* Owner Access Lock Toggle Button */}
+            <button
+              onClick={handleAdminToggle}
+              id="owner-mode-toggle-btn"
+              className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap border ${
+                isEditAllowed 
+                  ? 'bg-[#E6F4EA] hover:bg-emerald-50 text-[#1A3730] border-[#2A5248]/30 font-semibold md:shadow-xs' 
+                  : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-600 border-transparent'
+              }`}
+              title="Akses khusus pemilik untuk meralat portofolio"
+            >
+              {isEditAllowed ? <Unlock className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Lock className="w-3.5 h-3.5 text-neutral-400 shrink-0" />}
+              {isEditAllowed ? 'Edit Mode (Aktif)' : 'Mode Pemilik'}
+            </button>
 
             {/* Dynamic Find Out Explorer */}
             <button 
